@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Dashboard | ROSELLEA</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <style>
+        .seller-container { display: flex; min-height: 100vh; }
+        .seller-sidebar { width: 260px; background: #fff; border-right: 1px solid #eee; padding: 2rem; display: flex; flex-direction: column; }
+        .seller-main { flex: 1; padding: 3rem; background: #fcfcfc; }
+        .seller-nav-btn { padding: 1rem; border: none; background: none; text-align: left; font-size: 1rem; cursor: pointer; border-radius: 8px; margin-bottom: 0.5rem; transition: 0.3s; width: 100%; display: flex; align-items: center; gap: 10px; }
+        .seller-nav-btn.active { background: var(--accent); color: var(--text-dark); }
+        .seller-profile-card { background: white; border-radius: 20px; padding: 2.5rem; border: 1px solid #eee; margin-top: 2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.02); }
+        .stat-value { font-size: 2rem; font-weight: 700; color: var(--primary-dark); }
+        .btn-logout { margin-top: auto; color: #ff4757; justify-content: flex-start; }
+    </style>
+</head>
+<body>
+    <div class="seller-container">
+        <aside class="seller-sidebar">
+            <h2 style="margin-bottom: 2rem; color: var(--primary-dark);">Seller Portal</h2>
+            <button class="seller-nav-btn active" onclick="switchSellerTab('dashboard')"><ion-icon name="grid-outline"></ion-icon> Dashboard</button>
+            <button class="seller-nav-btn" onclick="switchSellerTab('catalog')"><ion-icon name="beaker-outline"></ion-icon> My Products</button>
+            <button class="seller-nav-btn" onclick="switchSellerTab('company')"><ion-icon name="business-outline"></ion-icon> Company Profile</button>
+            <button class="seller-nav-btn btn-logout" onclick="sellerLogout()"><ion-icon name="log-out-outline"></ion-icon> Logout</button>
+        </aside>
+
+        <main class="seller-main">
+            <!-- Dashboard Tab -->
+            <div id="seller-dashboard-panel" class="seller-panel active">
+                <h1 id="seller-welcome">Welcome back!</h1>
+                <p>Monitor your performance and stock levels.</p>
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 2rem;">
+                    <div class="seller-profile-card" style="padding: 1.5rem; margin-top:0;">
+                        <span style="color:var(--text-light); font-size:0.9rem;">Live Products</span>
+                        <div class="stat-value" id="stat-live">0</div>
+                    </div>
+                    <div class="seller-profile-card" style="padding: 1.5rem; margin-top:0;">
+                        <span style="color:var(--text-light); font-size:0.9rem;">Pending Review</span>
+                        <div class="stat-value" id="stat-pending">0</div>
+                    </div>
+                    <div class="seller-profile-card" style="padding: 1.5rem; margin-top:0;">
+                        <span style="color:var(--text-light); font-size:0.9rem;">Total Stock</span>
+                        <div class="stat-value" id="stat-stock">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Catalog Tab -->
+            <div id="seller-catalog-panel" class="seller-panel" style="display:none;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+                    <h1>Your Professional Catalog</h1>
+                    <button class="btn-primary" onclick="openAddModal()">+ New Product</button>
+                </div>
+                <div class="product-grid" id="seller-prods"></div>
+            </div>
+
+            <!-- Company Tab -->
+                        <div id="seller-company-panel" class="seller-panel" style="display:none;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+                    <h1>Company Details</h1>
+                    <button class="btn-primary" onclick="openEditProfileModal()">Edit Profile</button>
+                </div>
+                <div class="seller-profile-card">
+                    <div style="margin-bottom: 2rem;">
+                        <label style="display:block; font-weight:600; color:var(--text-light); margin-bottom:5px;">Business Name</label>
+                        <h2 id="view-company-name">Loading...</h2>
+                    </div>
+                    <div style="margin-bottom: 2rem;">
+                        <label style="display:block; font-weight:600; color:var(--text-light); margin-bottom:5px;">Description</label>
+                        <p id="view-company-desc">---</p>
+                    </div>
+                    <div>
+                        <label style="display:block; font-weight:600; color:var(--text-light); margin-bottom:5px;">Contact Phone</label>
+                        <p id="view-company-phone">---</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals (Simplified versions of the standard ones) -->
+    <div class="modal" id="add-product-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeAddModal()"><ion-icon name="close-outline"></ion-icon></span>
+            <h2>Submit New Product</h2>
+            <form id="add-product-form">
+                <div class="form-group"><label>Name</label><input type="text" id="p_name" required></div>
+                                <div class="form-group">
+                    <label>Category</label>
+                    <select id="p_category" required>
+                        <option value="Serum and essence">Serum and essence</option>
+                        <option value="Face moisturizer and day cream">Face moisturizer and day cream</option>
+                        <option value="Suncare">Suncare</option>
+                        <option value="Shampoo">Shampoo</option>
+                        <option value="Lips">Lips</option>
+                        <option value="Face wash">Face wash</option>
+                        <option value="Lip balm">Lip balm</option>
+                        <option value="Kajal">Kajal</option>
+                        <option value="Shower gel and body wash">Shower gel and body wash</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Brand</label><input type="text" id="p_brand" required></div>
+                <div class="form-group"><label>Price ($)</label><input type="number" step="0.01" id="p_price" required></div>
+                <div class="form-group"><label>Description</label><textarea id="p_desc" rows="3" required></textarea></div>
+                                <div class="form-group"><label>Product Image</label><input type="file" id="p_image" accept="image/*" required></div>
+                <button type="submit" class="btn-primary" style="width:100%;">Submit for Review</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Edit Profile Modal -->
+    <div class="modal" id="edit-profile-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeEditProfileModal()"><ion-icon name="close-outline"></ion-icon></span>
+            <h2>Edit Company Profile</h2>
+            <form id="edit-profile-form">
+                <div class="form-group"><label>Business Name</label><input type="text" id="edit_company_name" required></div>
+                <div class="form-group"><label>Description</label><textarea id="edit_company_desc" rows="4" required></textarea></div>
+                <div class="form-group"><label>Contact Phone</label><input type="text" id="edit_company_phone" required></div>
+                <button type="submit" class="btn-primary" style="width:100%;">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/seller.js"></script>
+</body>
+</html>

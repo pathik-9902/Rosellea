@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROSELLEA | Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</head>
+<body class="admin-body">
+
+    <header class="glass-header">
+        <div class="logo">
+            <h1>ROSELLEA <span>Admin</span></h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Back to Store</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <script>
+    // Auth Gate: Ensure only admins can see this page
+    fetch('api.php?action=check_auth')
+        .then(res => res.json())
+        .then(data => {
+            if (!data.authenticated || data.user.role !== 'admin') {
+                window.location.href = 'admin_login.html';
+            }
+        });
+</script>
+<div class="admin-container">
+        <aside class="admin-sidebar">
+            <ul>
+                <li class="tab-link active" onclick="switchAdminTab('products')">Manage Products</li>
+                <li class="tab-link" onclick="switchAdminTab('moderation')">Moderation Queue</li>
+                <li class="tab-link" onclick="switchAdminTab('stock-req')">Stock Requests</li>
+                <li class="tab-link" onclick="switchAdminTab('seller-apps')">Seller Requests</li>
+                <li><button class="btn-primary" style="width:100%; margin-top: 20px;" onclick="openAddModal()">+ Add Product</button></li>
+                <li><button class="btn-danger" style="width:100%; margin-top: 10px;" onclick="adminLogout()">Logout</button></li>
+            </ul>
+        </aside>
+
+        <main class="admin-main">
+            <!-- Products Panel -->
+            <div id="admin-products-panel" class="admin-tab-panel active">
+                <h2>Product Inventory</h2>
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-product-list"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Moderation Panel -->
+            <div id="admin-moderation-panel" class="admin-tab-panel">
+                <h2>Moderation Queue</h2>
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Seller</th>
+                                <th>Details</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="moderation-list"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Stock Requests Panel -->
+            <div id="admin-stock-req-panel" class="admin-tab-panel">
+                <h2>Stock Increase Requests</h2>
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Seller</th>
+                                <th>Requested Units</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stock-requests-list"></tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Seller Requests Panel -->
+            <div id="admin-seller-apps-panel" class="admin-tab-panel">
+                <h2>Seller Applications</h2>
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Company</th>
+                                <th>Phone</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="seller-apps-list"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div class="modal" id="add-product-modal">
+        <div class="modal-content admin-modal">
+            <span class="close-modal" onclick="closeAddModal()"><ion-icon name="close-outline"></ion-icon></span>
+            <h2>Add New Product</h2>
+            <form id="add-product-form">
+                <div class="form-group">
+                    <label>Product Name</label>
+                    <input type="text" id="p_name" required>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="p_category" required>
+                        <option value="Serum and essence">Serum and essence</option>
+                        <option value="Face moisturizer and day cream">Face moisturizer and day cream</option>
+                        <option value="Suncare">Suncare</option>
+                        <option value="Shampoo">Shampoo</option>
+                        <option value="Lips">Lips</option>
+                        <option value="Face wash">Face wash</option>
+                        <option value="Lip balm">Lip balm</option>
+                        <option value="Kajal">Kajal</option>
+                        <option value="Shower gel and body wash">Shower gel and body wash</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Brand</label>
+                    <input type="text" id="p_brand" required>
+                </div>
+                <div class="form-group">
+                    <label>Price ($)</label>
+                    <input type="number" step="0.01" id="p_price" required>
+                </div>
+                <div class="form-group">
+                    <label>Product Image</label>
+                    <input type="file" id="p_image" accept="image/*" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="p_desc" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn-primary">Save Product</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>

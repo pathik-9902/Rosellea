@@ -1,0 +1,8 @@
+sudo systemctl stop apache2 mariadb && \
+sudo systemctl disable apache2 mariadb && \
+sudo rm -rf /var/www/html/rosellea && \
+sudo mysql -e "DROP DATABASE IF EXISTS rosellea; DROP DATABASE IF EXISTS rosellea_db; DROP USER IF EXISTS 'roselleauser'@'localhost'; FLUSH PRIVILEGES;" && \
+sudo apt purge --autoremove -y apache2 apache2-bin apache2-data apache2-utils mariadb-server mariadb-client mariadb-common php libapache2-mod-php php-mysql php-common php-cli unzip && \
+sudo apt autoclean -y && \
+sudo rm -rf /etc/apache2 /etc/mysql /var/lib/mysql /var/log/apache2 /var/log/mysql && \
+echo "ROSSELLEA + Apache + MariaDB + PHP fully removed."

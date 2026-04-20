@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | ROSELLEA</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body { 
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            margin: 0;
+        }
+        .admin-login-box {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .admin-login-box h1 {
+            color: var(--primary-dark);
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-login-box">
+        <h1>Admin Control Panel</h1>
+        <form id="admin-login-form">
+            <div class="form-group" style="text-align: left;">
+                <label>Administrator Email</label>
+                <input type="email" id="adm_email" placeholder="admin@rosellea.com" required>
+            </div>
+            <div class="form-group" style="text-align: left; margin-top: 1rem;">
+                <label>Password</label>
+                <input type="password" id="adm_password" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-primary" style="width: 100%; margin-top: 2rem;">Sign In to Dashboard</button>
+        </form>
+        <p style="margin-top: 1.5rem; font-size: 0.9rem;">
+            <a href="index.html" style="color: var(--text-light); text-decoration: none;">← Back to Storefront</a>
+        </p>
+    </div>
+
+    <script>
+        document.getElementById('admin-login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('adm_email').value;
+            const password = document.getElementById('adm_password').value;
+
+            fetch('api.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'login', email, password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    if (data.user.role === 'admin') {
+                        window.location.href = 'admin.html';
+                    } else {
+                        alert("Access Denied: This area is for administrators only.");
+                        fetch('api.php', { method: 'POST', body: JSON.stringify({ action: 'logout' }) });
+                    }
+                } else {
+                    alert(data.message);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
